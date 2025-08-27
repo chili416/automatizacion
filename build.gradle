@@ -1,0 +1,83 @@
+// ==============================================
+// CONFIGURACIÓN DE BUILD DE GRADLE PARA SERENITY
+// ==============================================
+
+// Este bloque define el classpath necesario para que Gradle pueda usar los plugins de Serenity
+buildscript {
+
+    repositories {
+        // Repositorio donde se buscan las dependencias (Maven Central)
+        mavenCentral()
+    }
+
+    dependencies {
+        // Plugin para generar el reporte single-page de Serenity
+        classpath "net.serenity-bdd:serenity-single-page-report:3.3.0"
+
+        // Plugin principal de Gradle para integrar Serenity con Gradle
+        classpath "net.serenity-bdd:serenity-gradle-plugin:3.4.2"
+    }
+}
+
+// BLOQUE DE PLUGINS DEL PROYECTO
+plugins {
+    // Plugin de Serenity BDD (versión 3.3.0) para compilar y ejecutar pruebas
+    id "net.serenity-bdd.serenity-gradle-plugin" version "3.3.0"
+
+    // Plugin estándar de Java para compilar código Java
+    id 'java'
+}
+
+// Tareas por defecto que se ejecutan al correr `gradle` sin argumentos
+defaultTasks 'clear', 'test', 'aggregate'
+
+// Versión del proyecto
+version = '1.0-SNAPSHOT'
+
+// Configuración de codificación de caracteres para evitar errores con caracteres especiales
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
+// Compatibilidad con Java 17 (versión mínima para compilar y ejecutar)
+sourceCompatibility = 17
+targetCompatibility = 17
+
+// Repositorio central donde buscar las librerías (dependencias del proyecto)
+repositories {
+    mavenCentral()
+}
+
+// DEPENDENCIAS DEL PROYECTO
+dependencies {
+    // Librería central de Serenity BDD (núcleo del framework)
+    implementation 'net.serenity-bdd:serenity-core:3.6.0'
+
+    // Integración de Serenity con JUnit 5 (aunque más adelante usas JUnit4 por defecto en Serenity Cucumber)
+    implementation 'net.serenity-bdd:serenity-junit5:3.3.0'
+
+    // Soporte para pruebas BDD usando Cucumber junto con Serenity
+    implementation 'net.serenity-bdd:serenity-cucumber:3.6.0'
+
+    // Para evitar logs innecesarios de conflictos de logging en consola (silencia los logs SLF4J)
+    implementation 'org.slf4j:slf4j-nop:2.0.7'
+
+    // WebDriverManager automatiza la descarga y configuración de los drivers de navegador (Chrome, Edge, etc.)
+    implementation 'io.github.bonigarcia:webdrivermanager:5.6.1'
+
+    // Librerías para realizar aserciones en pruebas
+    testImplementation 'org.hamcrest:hamcrest:2.2'           // Aserciones clásicas
+    testImplementation 'org.assertj:assertj-core:3.24.2'      // Aserciones más modernas y legibles
+}
+
+// CONFIGURACIÓN DE LA TAREA DE TESTEO
+test {
+    // Usa JUnit Platform (necesario si se utiliza JUnit 5)
+    useJUnitPlatform()
+}
+
+// CONFIGURACIÓN ESPECÍFICA DE SERENITY
+serenity {
+
+    // Carpeta base donde se encuentran los archivos .feature de Gherkin
+    requirementsBaseDir = ["src/test/resources/features/"]
+}
